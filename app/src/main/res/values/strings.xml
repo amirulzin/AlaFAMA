@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">"Ala FAMA "</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_aboutfama">About FAMA</string>
+    <string name="acc_drawer_close">Close drawer</string>
+    <string name="acc_drawer_open">Open drawer</string>
+</resources>

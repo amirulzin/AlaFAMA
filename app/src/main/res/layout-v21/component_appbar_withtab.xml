@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.AppBarLayout
+    android:id="@+id/main_appbar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:orientation="vertical"
+    app:elevation="@dimen/basetoolbar_elevation"
+    tools:showIn="@layout/layout_tabparent">
+
+    <include layout="@layout/component_appbar_withtab_toolbar" />
+
+    <include layout="@layout/component_appbar_withtab_tablayout" />
+</android.support.design.widget.AppBarLayout>
