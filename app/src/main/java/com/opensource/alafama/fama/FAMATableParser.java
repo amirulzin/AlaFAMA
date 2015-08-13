@@ -13,35 +13,51 @@ import java.util.List;
 
 public class FAMATableParser
 {
+    private static final boolean LOGGING = true;
     private static final int PUSAT_COUNT = 15;
     private static final int FAMA_ID_MINLENGTH = 2;
+    private static final String tagTime = " ns";
+    private static long mLogTime = 0;
 
     public static HashMap<String, List<FAMAItem>> parseHTML(String htmlBody) throws NoTableDataException, NoRowDataException
     {
         final HashMap<String, List<FAMAItem>> outMap = new HashMap<>(PUSAT_COUNT);
 
+        logStart();
         final Element body = Jsoup.parse(htmlBody).body();
+        logTime("Parse HTML");
+
         final Elements tableKeyIdentifiers = body.getElementsContainingText("Pusat");
 
-        if (tableKeyIdentifiers.isEmpty()) throw new NoTableDataException("Key identified have empty result"); //fast exit
+        if (tableKeyIdentifiers.isEmpty())
+            throw new NoTableDataException("Key identified have empty result"); //fast exit
 
         for (Element tableIdentifier : tableKeyIdentifiers)
         {
             //just for final validation pre insert
             boolean successKey = false;
-
+            logStart();
             //first, get top table parent for "pusat"
             final Element parentNode = findFirstParentWithTag(tableIdentifier, "table");
+            logTime("Find TableParent");
             if (parentNode != null)
             {
+                logStart();
                 //then, get earliest sibling for that "pusat" table
                 final Element sibling = findEarliestSiblingWithTag(parentNode, "table");
+                logTime("Find TableSibling");
+
                 if (sibling != null)
                 {
+                    logStart();
                     final Elements rows = sibling.getElementsByTag("tr");
-                    if (rows.isEmpty()) throw new NoRowDataException("No rows can be identified"); //fast exit
+                    if (rows.isEmpty())
+                        throw new NoRowDataException("No rows can be identified"); //fast exit
 
                     final List<FAMAItem> famaItems = new ArrayList<>();
+                    logTime("Find rows");
+
+                    logStart();
                     for (Element row : rows)
                     {
                         //Only product row have ids
@@ -54,6 +70,7 @@ public class FAMATableParser
                             }
                         }
                     }
+                    logTime("Parse rows");
 
                     if (famaItems.isEmpty()) throw new NoRowDataException("Output rows are empty");
 
@@ -72,24 +89,10 @@ public class FAMATableParser
         return outMap;
     }
 
-    public static class NoTableDataException extends IOException {
-        public NoTableDataException(String detailMessage)
-        {
-            super(detailMessage);
-        }
-    }
-
-    public static class NoRowDataException extends IOException {
-        public NoRowDataException(String detailMessage)
-        {
-            super(detailMessage);
-        }
-    }
-
     private static Element findFirstParentWithTag(final Element currentElement, final String tag)
     {
         final Element parent = currentElement.parent();
-        if (parent!= null && parent.tagName() != null)
+        if (parent != null && parent.tagName() != null)
         {
             if (parent.tagName().equals("body"))
                 return null; //fast exit
@@ -139,6 +142,38 @@ public class FAMATableParser
             }
         }
         return null;
+    }
+
+    private static void logStart()
+    {
+        if (LOGGING)
+            mLogTime = System.nanoTime();
+    }
+
+    private static void logTime(final String msg)
+    {
+        if (LOGGING)
+        {
+            final long nanoTime = System.nanoTime();
+            final long displayTime = nanoTime - mLogTime;
+            System.out.println(msg + " " + displayTime + tagTime);
+        }
+    }
+
+    public static class NoTableDataException extends IOException
+    {
+        public NoTableDataException(String detailMessage)
+        {
+            super(detailMessage);
+        }
+    }
+
+    public static class NoRowDataException extends IOException
+    {
+        public NoRowDataException(String detailMessage)
+        {
+            super(detailMessage);
+        }
     }
 
 }
