@@ -30,6 +30,20 @@ public final class FAMAItem
         return famaId != null && name != null && grade != null && unit != null && max != null && average != null && min != null;
     }
 
+    @Override
+    public String toString()
+    {
+        return "FAMAItem{" +
+                "famaId='" + famaId + '\'' +
+                ", name='" + name + '\'' +
+                ", grade='" + grade + '\'' +
+                ", unit='" + unit + '\'' +
+                ", max='" + max + '\'' +
+                ", average='" + average + '\'' +
+                ", min='" + min + '\'' +
+                '}';
+    }
+
     /**
      * Enums for column data located in FAMA price tables.
      */

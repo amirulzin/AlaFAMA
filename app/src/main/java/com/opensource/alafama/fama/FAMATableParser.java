@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 public class FAMATableParser
 {
     private static final int PUSAT_COUNT = 15;
+    private static final int FAMA_ID_MINLENGTH = 2;
 
     public static HashMap<String, List<FAMAItem>> parseHTML(String htmlBody) throws NoTableDataException, NoRowDataException
     {
@@ -21,7 +23,7 @@ public class FAMATableParser
         final Element body = Jsoup.parse(htmlBody).body();
         final Elements tableKeyIdentifiers = body.getElementsContainingText("Pusat");
 
-        if (tableKeyIdentifiers.isEmpty()) throw new NoTableDataException(); //fast exit
+        if (tableKeyIdentifiers.isEmpty()) throw new NoTableDataException("Key identified have empty result"); //fast exit
 
         for (Element tableIdentifier : tableKeyIdentifiers)
         {
@@ -37,13 +39,13 @@ public class FAMATableParser
                 if (sibling != null)
                 {
                     final Elements rows = sibling.getElementsByTag("tr");
-                    if (rows.isEmpty()) throw new NoRowDataException(); //fast exit
+                    if (rows.isEmpty()) throw new NoRowDataException("No rows can be identified"); //fast exit
 
                     final List<FAMAItem> famaItems = new ArrayList<>();
                     for (Element row : rows)
                     {
                         //Only product row have ids
-                        if(row.id() != null)
+                        if (row.id() != null && row.id().length() > FAMA_ID_MINLENGTH)
                         {
                             final FAMAItem item = parseRow(row);
                             if (item != null)
@@ -53,7 +55,7 @@ public class FAMATableParser
                         }
                     }
 
-                    if (famaItems.isEmpty()) throw new NoRowDataException();
+                    if (famaItems.isEmpty()) throw new NoRowDataException("Output rows are empty");
 
                     successKey = true;
                     outMap.put(tableIdentifier.text(), famaItems);
@@ -66,18 +68,28 @@ public class FAMATableParser
             }
         }
 
-        if (outMap.size() == 0) throw new NoTableDataException();
+        if (outMap.size() == 0) throw new NoTableDataException("No tabular map can be outputted");
         return outMap;
     }
 
-    private static class NoTableDataException extends Exception {}
+    public static class NoTableDataException extends IOException {
+        public NoTableDataException(String detailMessage)
+        {
+            super(detailMessage);
+        }
+    }
 
-    private static class NoRowDataException extends Exception {}
+    public static class NoRowDataException extends IOException {
+        public NoRowDataException(String detailMessage)
+        {
+            super(detailMessage);
+        }
+    }
 
     private static Element findFirstParentWithTag(final Element currentElement, final String tag)
     {
         final Element parent = currentElement.parent();
-        if (parent.tagName() != null)
+        if (parent!= null && parent.tagName() != null)
         {
             if (parent.tagName().equals("body"))
                 return null; //fast exit
@@ -121,7 +133,8 @@ public class FAMATableParser
                     row.child(FAMAItem.RowData.AVERAGE.getValue()).text(),
                     row.child(FAMAItem.RowData.MIN.getValue()).text());
 
-            if(famaItem.isValid()){
+            if (famaItem.isValid())
+            {
                 return famaItem;
             }
         }
