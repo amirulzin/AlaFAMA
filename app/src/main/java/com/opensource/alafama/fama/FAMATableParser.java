@@ -27,7 +27,7 @@ public class FAMATableParser
         final Element body = Jsoup.parse(htmlBody).body();
         logTime("Parse HTML");
 
-        final Elements tableKeyIdentifiers = body.getElementsContainingText("Pusat");
+        final Elements tableKeyIdentifiers = body.getElementsContainingOwnText("Pusat");
 
         if (tableKeyIdentifiers.isEmpty())
             throw new NoTableDataException("Key identified have empty result"); //fast exit
@@ -39,7 +39,8 @@ public class FAMATableParser
             logStart();
             //first, get top table parent for "pusat"
             final Element parentNode = findFirstParentWithTag(tableIdentifier, "table");
-            logTime("Find TableParent");
+            logTime("Find TableParent ");
+
             if (parentNode != null)
             {
                 logStart();
@@ -58,7 +59,7 @@ public class FAMATableParser
                     logTime("Find rows");
 
                     logStart();
-                    for (Element row : rows)
+                    for (final Element row : rows)
                     {
                         //Only product row have ids
                         if (row.id() != null && row.id().length() > FAMA_ID_MINLENGTH)
@@ -101,7 +102,7 @@ public class FAMATableParser
             {
                 return parent;
             }
-            else findFirstParentWithTag(parent, tag);
+            else return findFirstParentWithTag(parent, tag);
         }
         return null;
     }
@@ -123,12 +124,12 @@ public class FAMATableParser
         return null;
     }
 
-    private static FAMAItem parseRow(Element row)
+    private static FAMAItem parseRow(final Element row)
     {
 
         if (row != null)
         {
-            FAMAItem famaItem = new FAMAItem(row.id(),
+            final FAMAItem famaItem = new FAMAItem(row.id(),
                     row.child(FAMAItem.RowData.NAME.getValue()).text(),
                     row.child(FAMAItem.RowData.GRADE.getValue()).text(),
                     row.child(FAMAItem.RowData.UNIT.getValue()).text(),
@@ -158,6 +159,12 @@ public class FAMATableParser
             final long displayTime = nanoTime - mLogTime;
             System.out.println(msg + " " + displayTime + tagTime);
         }
+    }
+
+    private static void log(String msg)
+    {
+        if (LOGGING)
+            System.out.println(msg);
     }
 
     public static class NoTableDataException extends IOException

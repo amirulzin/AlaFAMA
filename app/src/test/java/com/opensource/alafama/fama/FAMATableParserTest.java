@@ -54,17 +54,18 @@ public class FAMATableParserTest
                     {
                         final long parseStart = System.currentTimeMillis();
                         HashMap<String, List<FAMAItem>> outmap = FAMATableParser.parseHTML(response.body().string());
-
                         final long parseEnd = System.currentTimeMillis();
 
                         log(url);
                         log(String.format("Response time: %d ms  Parse time: %d ms", responseTime - startTime, parseEnd - parseStart));
-
+                        int total = 0;
                         for (Map.Entry<String, List<FAMAItem>> set : outmap.entrySet())
                         {
+                            total += set.getValue().size();
                             log(set.getKey() + " size: " + set.getValue().size());
                             log("Sample zero: " + set.getValue().get(0).toString());
                         }
+                        log("finished - table size: " + total);
                         succeed = true;
                     }
                     catch (IOException e)
