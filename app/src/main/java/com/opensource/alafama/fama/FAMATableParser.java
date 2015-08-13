@@ -36,25 +36,31 @@ public class FAMATableParser
                 final Element sibling = findEarliestSiblingWithTag(parentNode, "table");
                 if (sibling != null)
                 {
-                    Elements rows = sibling.getElementsByTag("tr");
+                    final Elements rows = sibling.getElementsByTag("tr");
                     if (rows.isEmpty()) throw new NoRowDataException(); //fast exit
 
                     final List<FAMAItem> famaItems = new ArrayList<>();
-                    for(Element row:rows){
-                        final FAMAItem item = parseRow(row);
-                        if(item != null){
-                            famaItems.add(item);
+                    for (Element row : rows)
+                    {
+                        //Only product row have ids
+                        if(row.id() != null)
+                        {
+                            final FAMAItem item = parseRow(row);
+                            if (item != null)
+                            {
+                                famaItems.add(item);
+                            }
                         }
                     }
 
-                    if(famaItems.isEmpty()) throw new NoRowDataException();
+                    if (famaItems.isEmpty()) throw new NoRowDataException();
 
                     successKey = true;
                     outMap.put(tableIdentifier.text(), famaItems);
                 }
             }
 
-            if(!successKey)
+            if (!successKey)
             {
                 //Todo revalidate "TABLE"
             }
@@ -104,7 +110,22 @@ public class FAMATableParser
 
     private static FAMAItem parseRow(Element row)
     {
-        //TODO parse row
+
+        if (row != null)
+        {
+            FAMAItem famaItem = new FAMAItem(row.id(),
+                    row.child(FAMAItem.RowData.NAME.getValue()).text(),
+                    row.child(FAMAItem.RowData.GRADE.getValue()).text(),
+                    row.child(FAMAItem.RowData.UNIT.getValue()).text(),
+                    row.child(FAMAItem.RowData.MAX.getValue()).text(),
+                    row.child(FAMAItem.RowData.AVERAGE.getValue()).text(),
+                    row.child(FAMAItem.RowData.MIN.getValue()).text());
+
+            if(famaItem.isValid()){
+                return famaItem;
+            }
+        }
         return null;
     }
+
 }
