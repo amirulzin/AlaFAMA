@@ -1,4 +1,4 @@
-package com.opensource.alafama.ui.activity;
+package com.opensource.alafama.ui.activity.common;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -59,6 +59,9 @@ public abstract class BaseDrawerActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * For concrete implementation return an ID here that corresponds with the navigation item menu id that was set in the NavigationView menu resource.
+     */
     public abstract int getDrawerItemId();
 
     public View inflateContent(@LayoutRes int layoutResourceId)
