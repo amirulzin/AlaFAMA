@@ -13,7 +13,7 @@ import java.util.List;
 
 public class FAMATableParser
 {
-    private static final boolean LOGGING = true;
+    private static final boolean LOGGING = false;
     private static final int PUSAT_COUNT = 15;
     private static final int FAMA_ID_MINLENGTH = 2;
     private static final String tagTime = " ns";
@@ -161,13 +161,13 @@ public class FAMATableParser
         }
     }
 
-    private static void log(String msg)
+    private static void log(final String msg)
     {
         if (LOGGING)
             System.out.println(msg);
     }
 
-    public static class NoTableDataException extends IOException
+    public static final class NoTableDataException extends IOException
     {
         public NoTableDataException(String detailMessage)
         {
@@ -175,7 +175,7 @@ public class FAMATableParser
         }
     }
 
-    public static class NoRowDataException extends IOException
+    public static final class NoRowDataException extends IOException
     {
         public NoRowDataException(String detailMessage)
         {
