@@ -48,7 +48,6 @@ public class WatchlistFragment extends BaseDrawerActivity.DrawerFragment
 
     private static final class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     {
-
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType)
         {
